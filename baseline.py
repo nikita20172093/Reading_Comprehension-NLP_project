@@ -143,8 +143,7 @@ def genQuestion(sentence,ner):
     
     
     #print(bucket)
-    question = '' 
-    questions = []           
+    question = ''            
 
     l1 = ['NNP', 'VBG', 'VBZ', 'IN']
     l2 = ['NNP', 'VBG', 'VBZ']
@@ -164,7 +163,65 @@ def genQuestion(sentence,ner):
     l12 = ['NNP', 'NN', 'IN']
     l13 = ['NN', 'VBZ']
     
-   
+    # Who question generation rules
+    l14 = ['NNP','VBD','NN']
+    l15 = ['NNP','VBZ','NN']
+    l16 = ['NNP','VB','NN']
+
+    questions = []
+
+    # With the use of conditional statements the dictionary is compared with the list created above
+    # Question starting with WHO
+    if all((key in bucket for key in l15)) and (word_ner_map.get(line.words[bucket['NNP']],"") == "PERSON"):
+        question = line.replace(line.words[bucket['NNP']],"Who") + "?"
+        questions.append(question)
+
+    elif all((key in bucket for key in l16)) and (word_ner_map.get(line.words[bucket['NNP']],"") == "PERSON"):
+        question = line.replace(line.words[bucket['NNP']],"Who") + "?"
+        questions.append(question)
+
+    elif all((key in bucket for key in l14)) and (word_ner_map.get(line.words[bucket['NNP']],"") == "PERSON"):
+        question = line.replace(line.words[bucket['NNP']],"Who") + "?"
+        questions.append(question)
+
+
+    # Question starting with WHEN    
+    if all((key in bucket for key in l15)) and time_flag:
+        start_index = bucket['VBZ']
+        end_index = bucket['IN']
+        question = "When " + line.words[bucket['VBZ']]
+
+        for i in range(end_index):
+            if i!=start_index:
+                question += (" " + line.words[i])
+        
+        question += (" " + "?")  
+        questions.append(question)  
+
+    elif all((key in bucket for key in l14)) and time_flag:
+        start_index = bucket['VBD']
+        end_index = bucket['IN']
+        question = "When " + line.words[bucket['VBD']]
+
+        for i in range(end_index):
+            if i!=start_index:
+                question += (" " + line.words[i])
+        
+        question += (" " + "?")
+        questions.append(question)   
+        
+    elif all((key in bucket for key in l16)) and time_flag:
+        start_index = bucket['VB']
+        end_index = bucket['IN']
+        question = "When " + line.words[bucket['VB']]
+
+        for i in range(end_index):
+            if i!=start_index:
+                question += (" " + line.words[i])
+        
+        question += (" " + "?") 
+        questions.append(question)          
+
     # Question starting with WHAT
     if all(key in bucket for key in l1): #'NNP', 'VBG', 'VBZ', 'IN' in sentence.
         question = 'What' + ' ' + line.words[bucket['VBZ']] +' '+ line.words[bucket['NNP']]+ ' '+ line.words[bucket['VBG']] + '?'
